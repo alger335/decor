@@ -1,41 +1,17 @@
-from datetime import datetime
+from decor import debug, log_path
 import glob
 import os
 
-def debug(function):
-    counter = {}
 
-    def new_function(*args, **kwargs):
-        date = datetime.now()
-        print(f'[{date}] Вызвана функция {function.__name__}')
-        print(f'с аргументами')
-        print(f'{args}')
-        print(f'{kwargs}')
-        result = function(*args, **kwargs)
-        print(f'Возвращенный результат {result}')
-        function_called = counter.get(function.__name__, 0)
-        if function_called == 0:
-            counter[function.__name__] = 1
-        else:
-            counter[function.__name__] += 1
-
-        print(f'Counter: {counter}')
-        with open('log.txt', 'a', encoding='UTF-8') as w:
-            w.write(f'[{date}] Вызвана функция {function.__name__},\
-с аргументами {args}, {kwargs}. Возвращен результат {result}\n')
-        return result
-    return new_function
-
-
-
-@debug #foo = replacer(foo)
+@debug(log_path=log_path)
 def file_filter():
     names_list = []
     for name in glob.glob('*.txt'):
         names_list.append(os.path.join(name))
     return names_list
 
-@debug
+
+@debug(log_path=log_path)
 def len_file(names_list):
     names_len_list = []
     for name in names_list:
@@ -45,7 +21,8 @@ def len_file(names_list):
     names_len_list.sort(key=lambda k: k[1])
     return names_len_list
 
-@debug
+
+@debug(log_path=log_path)
 def write_file(names_len_list):
     for name in names_len_list:
         with open(os.path.join(name[0]), encoding='UTF-8') as f:
